@@ -1,93 +1,25 @@
-import React, {useState, useEffect, useRef} from 'react';
-import quickMenuHeaderImage from '';
-import iconArrow from '';
-import $ from 'jquery';
+import React, {useState, useEffect} from 'react';
+import goTopImage from '';
 
-export default function QuickMenuComponent({최근본상품리스트}) {
+export default function GoTopComponent() {
 
-    const [quickMenu, setQuickMenu] = useState(false);
-    const [list, setList] = useState(false);
-    const [refQuickMenu] = useRef();
+    const [goTop, setGoTop] = useState(false);
 
     useEffect(()=>{
-        최근본상품리스트.length > 0 ? setList(true) : setList(false);
-    },[최근본상품리스트]);
-
-    useEffect(()=>{
-        window.addEventListener('scroll', function(){
-            let quickMenu = false;
-            if (window.scrollY >= 465) {
-                quickMenu = true;
+        window.addEventListner('scroll', function(){
+            let goTop = false;
+            if (window.scrollY > 1000) {
+                goTop = true;
             } else {
-                quickMenu = false;
+                goTop = false;
             }
-            setQuickMenu(quickMenu);
+            setGoTop(goTop);
         });
-        $('#quickMenu .on').css({marginTop: $('#quickMenu').innerHeight()/2});
     },[]);
 
-    const viewProductBox = useRef();
-    const [cnt, setCnt] = useState(0);
-    const [isClick, setIsClick] = useState(false);
-
-    const onClickViewProduct=(e, value)=>{
-        e.preventDefault();
-        setIsClick(true);
-
-        if (value === 'up') {
-            setCnt(cnt >= 최근본상품리스트.length-3 ? 최근본상품리스트.length-3 : cnt+1);
-        } else {
-            setCnt(cnt <= 0 ? 0 : cnt-1);
-        }
-    }
-
-    useEffect(()=>{
-        if (isClick === true) {
-            viewProductBox.current.style.top = `${-79 * cnt}px`;
-            setIsClick(false);
-        }
-    },[isClick]);
-
     return (
-        <div id="quickMenu" ref={refQuickMenu} className={quickMenu? 'on' : ''}>
-            <ul>
-                <li>
-                    <div><a href="!#"><img src={quickMenuHeaderImage} alt="" /></a></div>
-                </li>
-                <li><div></div></li>
-                <li>
-                    <div>
-                        <span><a href="!#">등급별 혜택</a></span>
-                        <span><a href="!#">레시피</a></span>
-                    </div>
-                </li>
-                <li><div></div></li>
-                <li>
-                    {
-                        list && (
-                            <div>
-                                <div className="view-top">
-                                    <a href="!#" onClick={(e)=>onClickViewProduct(e, 'down')}><img src={iconArrow}/></a>
-                                </div>
-                                <div className="view-box">
-                                    <ul ref={viewProductBox}>
-                                        {
-                                            최근본상품리스트.map((item, idx)=>{
-                                                return (
-                                                    <li key={item.번호}><a href="!#"><img src={item.이미지} alt="" /></a></li>
-                                                )
-                                            })
-                                        }
-                                    </ul>
-                                </div>
-                                <div className="view-bottom">
-                                    <a href="!#" onClick={(e)=>onClickViewProduct(e, 'up')}><img src={iconArrow} alt="" /></a>
-                                </div>
-                            </div>
-                        )
-                    }
-                </li>
-            </ul>
+        <div id="goTop" className={goTop === true ? 'on' : 'off'}>
+            <a href="#wrap"><img src={goTopImage} alt="" /></a>
         </div>
     );
 };
