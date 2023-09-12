@@ -1,29 +1,108 @@
-import React from 'react';
-import Postcode from 'react-daum-postcode';
-import {ViewProductContext} from './components/context/ViewProductContext';
+import React, {useState, useEffect} from 'react';
 
-export default function practice() {
+export default function Section1SlideWrapSlide({이미지, n}) {
+
+    const [cnt, setCnt] = useState(0);
+    const [isArrow, setIsArrow] = useState(false);
+    const refSlideWrap = React.useRef();
+    const [toggle, setToggle] = useState(0);
+    const [play, setPlay] = useState(true);
+
+    useEffect(()=>{
+        refSlideWrap.current.style.width = `${100*(n+2)}%`;
+    },[n]);
+
+    useEffect(()=>{
+        if (play === true) {
+            let id = setInterval(()=>{
+                setCnt(cnt => cnt+1);
+            },3000);
+            return () => clearInterval(id);
+        }
+    },[play]);
+
+    const onClickNextArrowBtn=(e)=>{
+        e.preventDefault();
+        setCnt(cnt+1);
+    }
+    const onClickPrevArrowBtn=(e)=>{
+        e.preventDefault();
+        setCnt(cnt-1);
+    }
+
+    const mainSlide=()=>{
+        refSlideWrap.current.style.transition = `all 0.6s ease-in-out`;
+        refSlideWrap.current.style.left = `${-(100*cnt)}%`;
+
+        returnNextFirst();
+        returnPrevFirst();
+    }
+
+    const returNextFirst=()=>{
+        if (cnt>n) {
+            setToggle(1);
+            setCnt(1);
+            refSlideWrap.current.style.transition = `none`;
+            refSlideWrap.current.style.left = `0%`;
+        }
+    }
+
+    const returnPrevFirst=()=>{
+        if (cnt<0) {
+            setCnt(n-1);
+            refSlideWrap.current.style.transition = `none`;
+            refSlideWrap.current.style.left = `${-(100*n)}%`;
+        }
+    }
+
+    useEffect(()=>{
+        if (toggle === 0) {
+            mainSlide();
+        } else {
+            setToggle(0);
+            setTimeout(()=>{
+                mainSlide();
+            },100);
+        }
+    },[cnt]);
+
+    const onMouseEnterContainer=(e)=>{
+        e.preventDefault();
+        setIsArrow(true);
+    }
+    const onMouseLeaveContainer=(e)=>{
+        e.preventDefault();
+        setIsArrow(false);
+    }
+
     return (
-        <div id="postCodeBox">
-            <div id="form">
-                <form>
-                    <ul>
-                        <li><h1>샛별배송 지역입니다.</h1></li>
-                        <li><h2>매일 새벽, 문 앞까지 신선함을 전해드려요.</h2></li>
-                        <li>
-                            <div>{post.주소1}</div>
-                            <button>재검색</button>
-                        </li>
-                        <li>
-                            <input type="text" id='add2' name='add2' value={post.주소2} onChange={onChangeAddress2}/>
-                        </li>
-                        <li>
-                            <p>저장된 배송지는 최대 7일 간 임시 저장 후 자동 삭제됩니다.</p>
-                        </li>
-                        li
-                    </ul>
-                </form>
+        <div className="slide-container" onMouseEnter={onMouseEnterContainer} onMouseLeave={onMouseLeaveContainer}>
+            <div className="slide-view">
+                <ul className="slide-wrap" ref={refSlideWrap}>
+                    {
+                        이미지.map((item, idx)=>{
+                            return (
+                                <li className="slide" key={idx}>
+                                    <a href="!#"><img src={item.src} alt="" /></a>
+                                </li>
+                            )
+                        })
+                    }
+                </ul>
             </div>
+            {
+                isArrow && (
+                    <>
+                        <a href="!#" className="next-arrow-btn" onClick={onClickNextArrowBtn}><img src="" alt="" /></a>
+                        <a href="!#" className='prev-arrow-btn' onClick={onClickPrevArrowBtn}><img src="" alt="" /></a>
+                    </>
+                )
+            }
+            <span className="page-number-box">
+                <em className="current-number">{cnt+1 > n ? 1 : cnt+1}</em>
+                <i>/</i>
+                <em className="total-number">{n}</em>
+            </span>
         </div>
     );
 };
