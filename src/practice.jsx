@@ -1,108 +1,58 @@
 import React, {useState, useEffect} from 'react';
+import Section2SlideWrapSlide from '';
+import axios from 'axios';
+import $ from 'jquery';
 
-export default function Section1SlideWrapSlide({이미지, n}) {
+export default function Section2Component() {
 
-    const [cnt, setCnt] = useState(0);
-    const [isArrow, setIsArrow] = useState(false);
-    const refSlideWrap = React.useRef();
-    const [toggle, setToggle] = useState(0);
-    const [play, setPlay] = useState(true);
-
-    useEffect(()=>{
-        refSlideWrap.current.style.width = `${100*(n+2)}%`;
-    },[n]);
+    const [state, setState] = useState({
+        상품: [],
+        n: 0
+    });
 
     useEffect(()=>{
-        if (play === true) {
-            let id = setInterval(()=>{
-                setCnt(cnt => cnt+1);
-            },3000);
-            return () => clearInterval(id);
-        }
-    },[play]);
-
-    const onClickNextArrowBtn=(e)=>{
-        e.preventDefault();
-        setCnt(cnt+1);
-    }
-    const onClickPrevArrowBtn=(e)=>{
-        e.preventDefault();
-        setCnt(cnt-1);
-    }
-
-    const mainSlide=()=>{
-        refSlideWrap.current.style.transition = `all 0.6s ease-in-out`;
-        refSlideWrap.current.style.left = `${-(100*cnt)}%`;
-
-        returnNextFirst();
-        returnPrevFirst();
-    }
-
-    const returNextFirst=()=>{
-        if (cnt>n) {
-            setToggle(1);
-            setCnt(1);
-            refSlideWrap.current.style.transition = `none`;
-            refSlideWrap.current.style.left = `0%`;
-        }
-    }
-
-    const returnPrevFirst=()=>{
-        if (cnt<0) {
-            setCnt(n-1);
-            refSlideWrap.current.style.transition = `none`;
-            refSlideWrap.current.style.left = `${-(100*n)}%`;
-        }
-    }
+        axios({
+            url: './data/sec2_slide.json',
+            method: 'GET'
+        })
+        .then((res)=>{
+            if (res.status === 200) {
+                setState({
+                    ...state,
+                    상품: res.data.상품,
+                    n: res.data.상품.length
+                });
+                $('#section2 .slide-wrap').css({width: `${25 * state.n}%`});
+            }
+        })
+        .catch((err)=>{console.log(err)});
+    },[state.n]);
 
     useEffect(()=>{
-        if (toggle === 0) {
-            mainSlide();
-        } else {
-            setToggle(0);
-            setTimeout(()=>{
-                mainSlide();
-            },100);
-        }
-    },[cnt]);
+        let cnt = 0;
+        mainSlide();
 
-    const onMouseEnterContainer=(e)=>{
-        e.preventDefault();
-        setIsArrow(true);
-    }
-    const onMouseLeaveContainer=(e)=>{
-        e.preventDefault();
-        setIsArrow(false);
-    }
+        function mainSlide(){
+            $('#section2 .slide-wrap').stop().animate({});
+        }
+    },[]);
 
     return (
-        <div className="slide-container" onMouseEnter={onMouseEnterContainer} onMouseLeave={onMouseLeaveContainer}>
-            <div className="slide-view">
-                <ul className="slide-wrap" ref={refSlideWrap}>
-                    {
-                        이미지.map((item, idx)=>{
-                            return (
-                                <li className="slide" key={idx}>
-                                    <a href="!#"><img src={item.src} alt="" /></a>
-                                </li>
-                            )
-                        })
-                    }
-                </ul>
+        <section id="section2">
+            <div className="contaner">
+                <div className="title">
+                    <h2>이 상품 어때요?</h2>
+                </div>
+                <div className="content">
+                    <div className="slide-container">
+                        <div className="slide-view">
+                            <Section2SlideWrapSlide 상품={state.상품}/>
+                        </div>
+                        <a href="!#" className='arrow-next-btn'><img src="" alt="" /></a>
+                        <a href="!#" className='arrow-prev-btn'><img src="" alt="" /></a>
+                    </div>
+                </div>
             </div>
-            {
-                isArrow && (
-                    <>
-                        <a href="!#" className="next-arrow-btn" onClick={onClickNextArrowBtn}><img src="" alt="" /></a>
-                        <a href="!#" className='prev-arrow-btn' onClick={onClickPrevArrowBtn}><img src="" alt="" /></a>
-                    </>
-                )
-            }
-            <span className="page-number-box">
-                <em className="current-number">{cnt+1 > n ? 1 : cnt+1}</em>
-                <i>/</i>
-                <em className="total-number">{n}</em>
-            </span>
-        </div>
+        </section>
     );
 };
