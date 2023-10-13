@@ -11,7 +11,7 @@ export default function Section4SlideWrapSlide({상품}) {
 
     useEffect(()=>{
         let setId = setInterval(function(){
-            let timeSale = '2023-07-28 09:00:00';
+            let timeSale = '2023-11-28 09:00:00';
             let start = new Date(timeSale);
             start.setHours(start.getHours()+24);
             let now = new Date();
