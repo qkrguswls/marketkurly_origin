@@ -1,15 +1,12 @@
 import React from 'react';
 import {ViewProductContext} from '';
 
-export default function Section8SlideWrapSlide({상품}) {
-
+export default function Section9SlideWrapSlide({상품}) {
     const {setViewProductFn} = React.useContext(ViewProductContext);
-
     const onClickViewProduct=(e, item, imgPath)=>{
         e.preventDefault();
         setViewProductFn(item, imgPath);
     }
-
     return (
         <ul className="slide-wrap">
             {
@@ -19,7 +16,6 @@ export default function Section8SlideWrapSlide({상품}) {
                             <div className="slide-gap" onClick={(e)=>onClickViewProduct(e, item, `./img/intro/${item.이미지}`)}>
                                 <div className="img-box">
                                     <img src={`./img/intro/${item.이미지}`} alt="" />
-                                    <span><img src="" alt="" /></span>
                                 </div>
                                 <div className="text-box">
                                     <ul>
